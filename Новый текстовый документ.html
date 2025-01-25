@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конфигуратор товара</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: black; /* Черный фон */
+            color: white; /* Белый текст по умолчанию */
+            background-image: url('https://www.transparenttextures.com/patterns/asfalt-light.png'); /* Пример хаотичного фона */
+        }
+        h1, h2 {
+            text-align: center;
+            color: darkred; /* Темно-красный цвет заголовка */
+        }
+        #configurator, #comingSoonMessage {
+            display: none;
+            margin-top: 20px;
+            background-color: rgba(255, 255, 255, 0.1); /* Полупрозрачный фон для читаемости */
+            padding: 20px;
+            border-radius: 10px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: darkviolet; /* Темно-фиолетовый цвет текста */
+        }
+        select, input[type="checkbox"], button {
+            margin-bottom: 15px;
+        }
+        #confirmation {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 50px;
+            text-align: center;
+            z-index: 1000;
+        }
+        #confirmation h2 {
+            font-family: 'Old English Text MT', cursive; /* Шрифт Old English */
+            font-size: 48px; /* Размер шрифта для итоговой цены */
+            color: darkred; /* Темно-красный цвет текста подтверждения */
+        }
+        a {
+            color: lightblue; /* Цвет гиперссылок */
+            text-decoration: underline;
+        }
+        .close-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: darkred;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Coming Soon... More Products...</h1>
+
+<h2>Выберите товар:</h2>
+<select id="productSelect" onchange="showConfigurator()">
+    <option value="">-- Выберите --</option>
+    <option value="tshirt">Футболка - Coming Soon...</option>
+    <option value="pants">Штаны - SCPST0 Pants (ver1)</option>
+</select>
+
+<div id="configurator">
+    <h2>Конфигуратор штанов SCPST0</h2>
+    <label for="basePrice">Базовая цена (без крови и вышивки): 1500 рублей</label>
+
+    <label>
+        <input type="checkbox" id="blood" onclick="calculatePrice()"> Кровь (+300 рублей)
+    </label>
+
+    <label>
+        <input type="checkbox" id="crosses" onclick="calculatePrice()"> Крестики (+300 рублей)
+    </label>
+
+    <label>
+        <input type="checkbox" id="nickname" onclick="calculatePrice()"> Ник (+300 рублей)
+    </label>
+
+    <label for="customEmbroidery">Кастомная вышивка:</label>
+    <select id="customEmbroidery" onchange="calculatePrice()">
+        <option value="0">Нет</option>
+        <option value="700">По договоренности (+700 рублей)</option>
+    </select>
+
+    <h3>Итоговая цена: <span id="totalPrice">1500</span> рублей</h3>
+    <button onclick="confirmOrder()">Подтвердить заказ</button>
+</div>
+
+<div id="comingSoonMessage">
+    <h2>В разработке</h2>
+    Писать в ЛС сообщества:
+    <br><a href="https://vk.com/scpst0?from=groups" target="_blank">VK</a>, 
+    или Телеграмм: 
+    <a href="https://t.me/scpst0000" target="_blank">Telegram</a>, 
+    или запасной Телеграмм:
+    <a href="https://t.me/ZXCbel0chka" target="_blank">Telegram</a>
+</div>
+
+<div id="confirmation">
+    <h2>Итоговая цена: <span id="finalPrice"></span> рублей</h2>
+    Для заказа писать в ЛС:
+    <br><a href="https://vk.com/scpst0?from=groups" target="_blank">VK</a>, 
+    или Телеграмм: 
+    <a href="https://t.me/scpst0000" target="_blank">Telegram</a>, 
+    или запасной Телеграмм: 
+    <a href="https://t.me/ZXCbel0chka" target="_blank">Telegram</a>
+    <br><button class="close-button" onclick="closeConfirmation()">Закрыть</button>
+</div>
+
+<script>
+    function showConfigurator() {
+        const productSelect = document.getElementById('productSelect');
+        const configurator = document.getElementById('configurator');
+        const comingSoonMessage = document.getElementById('comingSoonMessage');
+        
+        if (productSelect.value === 'pants') {
+            configurator.style.display = 'block';
+            comingSoonMessage.style.display = 'none';
+        } else if (productSelect.value === 'tshirt') {
+            comingSoonMessage.style.display = 'block';
+            configurator.style.display = 'none';
+        } else {
+            configurator.style.display = 'none';
+            comingSoonMessage.style.display = 'none';
+            resetConfigurator();
+        }
+    }
+
+    function calculatePrice() {
+        let basePrice = 1500;
+        let totalPrice = basePrice;
+
+        if (document.getElementById('blood').checked) {
+            totalPrice += 300;
+        }
+
+        if (document.getElementById('crosses').checked) {
+            totalPrice += 300;
+        }
+
+        if (document.getElementById('nickname').checked) {
+            totalPrice += 300;
+        }
+
+        totalPrice += parseInt(document.getElementById('customEmbroidery').value);
+
+        document.getElementById('totalPrice').innerText = totalPrice;
+    }
+
+    function confirmOrder() {
+        const totalPrice = document.getElementById('totalPrice').innerText;
+        document.getElementById('finalPrice').innerText = totalPrice;
+        document.getElementById('confirmation').style.display = 'block';
+    }
+
+    function closeConfirmation() {
+        document.getElementById('confirmation').style.display = 'none';
+        resetConfigurator();
+    }
+
+    function resetConfigurator() {
+        document.getElementById('blood').checked = false;
+        document.getElementById('crosses').checked = false;
+        document.getElementById('nickname').checked = false;
+        document.getElementById('customEmbroidery').value = "0";
+        document.getElementById('totalPrice').innerText = "1500";
+    }
+</script>
+
+</body>
+</html>
